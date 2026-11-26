@@ -1,0 +1,27 @@
+<nav class="navbar navbar-expand-md navbar-dark navbar-vet">
+  <div class="container">
+    <a class="navbar-brand fw-semibold" routerLink="/mascotas">
+      <span class="brand-mark" aria-hidden="true">✦</span>
+      <span>vet-clinic</span>
+    </a>
+    <button class="navbar-toggler" type="button" aria-label="Abrir menú"
+            *ngIf="auth.estaLogueado()" (click)="menuAbierto = !menuAbierto">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" [class.show]="menuAbierto" *ngIf="auth.estaLogueado()">
+      <ul class="navbar-nav me-auto ms-md-4">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/mascotas" routerLinkActive="active">Mascotas</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/citas" routerLinkActive="active">Agenda de citas</a>
+        </li>
+      </ul>
+      <button class="btn btn-outline-light btn-sm" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </div>
+</nav>
+
+<main class="container py-4">
+  <router-outlet></router-outlet>
+</main>

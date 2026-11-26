@@ -1,0 +1,84 @@
+<a routerLink="/mascotas" class="btn btn-link px-0 profile-back">← Volver a mascotas</a>
+
+<div *ngIf="!mascota" class="alert alert-warning">No se encontró la mascota solicitada.</div>
+
+<ng-container *ngIf="mascota">
+  <section class="pet-profile-hero">
+    <div class="pet-profile-photo">
+      <img *ngIf="mascota.foto" [src]="mascota.foto" [alt]="'Foto de ' + mascota.nombre" />
+      <span *ngIf="!mascota.foto" aria-hidden="true">{{ mascota.especie === 'gato' ? '🐱' : mascota.especie === 'ave' ? '🐦' : '🐾' }}</span>
+    </div>
+    <div class="pet-profile-heading">
+      <span class="profile-kicker">PERFIL DEL PACIENTE</span>
+      <h1>{{ mascota.nombre }}</h1>
+      <p class="pet-profile-subtitle">{{ mascota.especie | titlecase }} <span>·</span> {{ mascota.raza }}</p>
+      <div class="pet-profile-tags">
+        <span>{{ mascota.edad }} {{ mascota.edad === 1 ? 'año' : 'años' }}</span>
+        <span>{{ mascota.fechaNacimiento }}</span>
+      </div>
+    </div>
+    <a class="btn btn-light profile-appointment" routerLink="/citas">＋ Agendar cita</a>
+  </section>
+
+  <section class="profile-info-grid">
+    <article class="profile-info-card">
+      <div class="profile-info-icon">👤</div>
+      <div>
+        <span class="profile-info-label">Dueño</span>
+        <strong>{{ mascota.dueno.nombre }}</strong>
+      </div>
+    </article>
+    <article class="profile-info-card">
+      <div class="profile-info-icon">📞</div>
+      <div>
+        <span class="profile-info-label">Teléfono</span>
+        <strong>{{ mascota.dueno.telefono }}</strong>
+      </div>
+    </article>
+    <article class="profile-info-card">
+      <div class="profile-info-icon">✉️</div>
+      <div>
+        <span class="profile-info-label">Correo electrónico</span>
+        <strong>{{ mascota.dueno.email }}</strong>
+      </div>
+    </article>
+  </section>
+
+  <section class="profile-history-section">
+    <div class="profile-section-heading">
+      <div>
+        <span class="profile-kicker">SEGUIMIENTO MÉDICO</span>
+        <h2>Historial de atención</h2>
+        <p>Registro de consultas, diagnósticos y tratamientos de {{ mascota.nombre }}.</p>
+      </div>
+      <div class="profile-history-count">
+        <strong>{{ citas.length }}</strong>
+        <span>consultas</span>
+      </div>
+    </div>
+
+    <div *ngIf="citas.length === 0" class="profile-empty">
+      <span>🩺</span>
+      <strong>Aún no hay atenciones registradas</strong>
+      <p>Cuando registres citas y atenciones, aparecerán aquí.</p>
+      <a class="btn btn-vet" routerLink="/citas">Ir a agenda de citas</a>
+    </div>
+
+    <div class="table-responsive profile-history-table" *ngIf="citas.length > 0">
+      <table class="table align-middle">
+        <thead>
+          <tr><th>Fecha</th><th>Hora</th><th>Motivo</th><th>Estado</th><th>Diagnóstico / tratamiento</th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of citas" [appResaltarProxima]="c.fecha" [activa]="c.estado === 'pendiente'">
+            <td class="text-capitalize">{{ c.fecha | fechaEs }}</td>
+            <td>{{ c.hora }}</td>
+            <td>{{ c.motivo }}</td>
+            <td>{{ c.estado | estadoCita }}</td>
+            <td>{{ c.diagnostico || 'Pendiente de registrar' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</ng-container>

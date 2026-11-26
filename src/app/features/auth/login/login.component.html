@@ -1,0 +1,49 @@
+<section class="login-scene">
+  <div class="login-paw paw-one" aria-hidden="true">🐾</div>
+  <div class="login-paw paw-two" aria-hidden="true">🐾</div>
+  <div class="login-paw paw-three" aria-hidden="true">🐾</div>
+  <div class="login-paw paw-four" aria-hidden="true">🐾</div>
+
+  <div class="login-card card">
+    <div class="card-body">
+      <div class="login-brand">
+        <img src="logo.png" alt="Veterinaria Mundo Animal" class="login-logo" />
+      </div>
+
+      <div class="login-heading">
+        <span class="login-eyebrow">CUIDAMOS A QUIENES MÁS QUIERES</span>
+        <h1>¡Qué gusto verte!</h1>
+        <p>Ingresa a tu cuenta para continuar.</p>
+      </div>
+
+      <div class="alert alert-danger login-error" *ngIf="error" role="alert">{{ error }}</div>
+
+      <form [formGroup]="form" (ngSubmit)="ingresar()" novalidate>
+        <div class="mb-3">
+          <label class="form-label" for="usuario">Usuario</label>
+          <input id="usuario" class="form-control login-input" formControlName="usuario"
+                 [class.is-invalid]="invalido('usuario')" autocomplete="username"
+                 placeholder="Escribe tu usuario" />
+          <div class="invalid-feedback">Ingresa tu usuario.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="password">Contraseña</label>
+          <input id="password" type="password" class="form-control login-input" formControlName="password"
+                 [class.is-invalid]="invalido('password')" autocomplete="current-password"
+                 placeholder="Escribe tu contraseña" />
+          <div class="invalid-feedback">La contraseña debe tener al menos 4 caracteres.</div>
+        </div>
+
+        <button class="btn btn-vet login-submit w-100" type="submit">
+          Ingresar <span aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <span class="login-footer-paw" aria-hidden="true">🐾</span>
+        <span>Un espacio dedicado al bienestar de tus mascotas</span>
+      </div>
+    </div>
+  </div>
+</section>

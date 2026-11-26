@@ -1,0 +1,90 @@
+<h1 class="h3 mb-3">Registrar mascota y dueño</h1>
+
+<form [formGroup]="form" (ngSubmit)="guardar()" novalidate class="card shadow-sm">
+  <div class="card-body p-4">
+    <div class="row g-4">
+      <fieldset class="col-12 col-lg-6">
+        <legend class="h5">Datos de la mascota</legend>
+
+        <div class="pet-photo-picker mb-4">
+          <div class="pet-photo-preview">
+            <img *ngIf="foto" [src]="foto" alt="Vista previa de la mascota" />
+            <span *ngIf="!foto" aria-hidden="true">🐾</span>
+          </div>
+          <div class="pet-photo-copy">
+            <label class="form-label" for="fotoMascota">Foto de la mascota</label>
+            <input id="fotoMascota" class="form-control" type="file" accept="image/*"
+                   (change)="seleccionarFoto($event)" />
+            <small class="text-muted">Opcional. JPG, PNG o WEBP; máximo 8 MB.</small>
+            <button *ngIf="foto" type="button" class="btn btn-sm btn-outline-secondary mt-2"
+                    (click)="quitarFoto()">Quitar foto</button>
+            <div class="text-danger small mt-1" *ngIf="fotoError">{{ fotoError }}</div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="nombre">Nombre</label>
+          <input id="nombre" class="form-control" formControlName="nombre"
+                 [class.is-invalid]="invalido('nombre')" />
+          <div class="invalid-feedback">Ingresa el nombre (mínimo 2 letras).</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="especie">Especie</label>
+          <select id="especie" class="form-select" formControlName="especie">
+            <option *ngFor="let e of especies" [value]="e">{{ e | titlecase }}</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="raza">Raza</label>
+          <input id="raza" class="form-control" formControlName="raza"
+                 [class.is-invalid]="invalido('raza')" />
+          <div class="invalid-feedback">Indica la raza (puedes escribir “Mestizo”).</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="fn">Fecha de nacimiento</label>
+          <input id="fn" type="date" class="form-control" formControlName="fechaNacimiento"
+                 [max]="hoy" [class.is-invalid]="invalido('fechaNacimiento')" />
+          <div class="invalid-feedback">
+            <ng-container *ngIf="form.get('fechaNacimiento')?.errors?.['fechaFutura']; else req">
+              La fecha no puede ser futura.
+            </ng-container>
+            <ng-template #req>Selecciona la fecha de nacimiento.</ng-template>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset class="col-12 col-lg-6" formGroupName="dueno">
+        <legend class="h5">Datos del dueño</legend>
+
+        <div class="mb-3">
+          <label class="form-label" for="dnombre">Nombre completo</label>
+          <input id="dnombre" class="form-control" formControlName="nombre"
+                 [class.is-invalid]="invalido('dueno.nombre')" />
+          <div class="invalid-feedback">Ingresa el nombre del dueño (mínimo 3 letras).</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="tel">Teléfono</label>
+          <input id="tel" class="form-control" formControlName="telefono" inputmode="numeric"
+                 maxlength="9" [class.is-invalid]="invalido('dueno.telefono')" />
+          <div class="invalid-feedback">Debe tener 9 dígitos y empezar con 9.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="email">Correo electrónico</label>
+          <input id="email" type="email" class="form-control" formControlName="email"
+                 [class.is-invalid]="invalido('dueno.email')" />
+          <div class="invalid-feedback">Ingresa un correo válido.</div>
+        </div>
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="card-footer d-flex gap-2 justify-content-end bg-white">
+    <a class="btn btn-outline-secondary" routerLink="/mascotas">Cancelar</a>
+    <button class="btn btn-vet" type="submit">Guardar mascota</button>
+  </div>
+</form>

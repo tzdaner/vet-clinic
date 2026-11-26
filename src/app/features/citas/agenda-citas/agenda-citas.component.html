@@ -1,0 +1,117 @@
+<h1 class="h3 mb-3">Agenda de citas</h1>
+
+<div *ngIf="mascotas.length === 0" class="alert alert-warning">
+  Primero registra una mascota para poder agendar citas.
+  <a routerLink="/mascotas/nueva" class="alert-link">Registrar mascota</a>
+</div>
+
+<div class="row g-4">
+  <!-- Formulario -->
+  <div class="col-12 col-lg-5">
+    <form [formGroup]="form" (ngSubmit)="agendar()" novalidate class="card shadow-sm">
+      <div class="card-body p-4">
+        <h2 class="h5 mb-3">Nueva cita</h2>
+
+        <div class="alert alert-info py-2" *ngIf="mensaje">{{ mensaje }}</div>
+
+        <div class="mb-3">
+          <label class="form-label" for="mascota">Mascota</label>
+          <select id="mascota" class="form-select" formControlName="mascotaId"
+                  [class.is-invalid]="invalido('mascotaId')">
+            <option [ngValue]="null" disabled>Selecciona una mascota</option>
+            <option *ngFor="let m of mascotas" [ngValue]="m.id">{{ m.nombre }} ({{ m.dueno.nombre }})</option>
+          </select>
+          <div class="invalid-feedback">Selecciona la mascota.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="fecha">Fecha</label>
+          <input id="fecha" type="date" class="form-control" formControlName="fecha"
+                 [min]="hoy" [class.is-invalid]="invalido('fecha')" />
+          <div class="invalid-feedback">Elige una fecha de hoy en adelante.</div>
+        </div>
+
+        <div class="mb-3">
+          <span class="form-label d-block">Disponibilidad del día</span>
+          <span *ngFor="let h of horarios" class="hora-chip"
+                [class.hora-libre]="!horasOcupadas.includes(h) && !horasPasadas.includes(h)"
+                [class.hora-ocupada]="horasOcupadas.includes(h)"
+                [class.hora-pasada]="horasPasadas.includes(h)">{{ h }}</span>
+          <div class="form-text">Los horarios en gris ya pasaron; los tachados están ocupados.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="hora">Hora</label>
+          <select id="hora" class="form-select" formControlName="hora"
+                  [class.is-invalid]="invalido('hora')">
+            <option value="" disabled>Selecciona una hora libre</option>
+            <option *ngFor="let h of horasLibres" [value]="h">{{ h }}</option>
+          </select>
+          <div class="invalid-feedback">Selecciona una hora disponible.</div>
+          <div class="form-text text-danger" *ngIf="horasLibres.length === 0">
+            No quedan horarios futuros libres para este día.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="motivo">Motivo de la consulta</label>
+          <textarea id="motivo" rows="2" class="form-control" formControlName="motivo"
+                    [class.is-invalid]="invalido('motivo')"></textarea>
+          <div class="invalid-feedback">Describe el motivo (mínimo 5 caracteres).</div>
+        </div>
+
+        <button class="btn btn-vet w-100" type="submit" [disabled]="mascotas.length === 0">Agendar cita</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista de citas -->
+  <div class="col-12 col-lg-7">
+    <h2 class="h5">Citas programadas</h2>
+
+    <div *ngIf="citas.length === 0" class="alert alert-light border">
+      Aún no hay citas. Agenda la primera con el formulario.
+    </div>
+
+    <div class="card shadow-sm mb-3" *ngIf="citaEnAtencion">
+      <div class="card-body">
+        <h3 class="h6">Atender a {{ nombreMascota(citaEnAtencion.mascotaId) }}</h3>
+        <textarea class="form-control mb-2" rows="2" placeholder="Diagnóstico y tratamiento"
+                  [formControl]="diagnostico"
+                  [class.is-invalid]="diagnostico.invalid && diagnostico.touched"></textarea>
+        <div class="invalid-feedback d-block" *ngIf="diagnostico.invalid && diagnostico.touched">
+          Escribe el diagnóstico (mínimo 5 caracteres).
+        </div>
+        <div class="d-flex gap-2 justify-content-end mt-2">
+          <button class="btn btn-sm btn-outline-secondary" (click)="citaEnAtencion = undefined">Cerrar</button>
+          <button class="btn btn-sm btn-vet" (click)="guardarAtencion()">Guardar atención</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive" *ngIf="citas.length > 0">
+      <table class="table align-middle bg-white">
+        <thead>
+          <tr><th>Fecha</th><th>Hora</th><th>Mascota</th><th>Motivo</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of citas; trackBy: trackById"
+              [appResaltarProxima]="c.fecha" [activa]="c.estado === 'pendiente'">
+            <td class="text-capitalize">{{ c.fecha | fechaEs }}</td>
+            <td>{{ c.hora }}</td>
+            <td>{{ nombreMascota(c.mascotaId) }}</td>
+            <td>{{ c.motivo }}</td>
+            <td>{{ c.estado | estadoCita }}</td>
+            <td class="text-end text-nowrap">
+              <ng-container *ngIf="c.estado === 'pendiente'">
+                <button class="btn btn-sm btn-outline-success me-1" (click)="iniciarAtencion(c)">Atender</button>
+                <button class="btn btn-sm btn-outline-danger" (click)="cancelar(c)">Cancelar</button>
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small text-muted">Las filas resaltadas son citas pendientes para hoy o mañana.</p>
+  </div>
+</div>
